@@ -57,7 +57,8 @@ class SimpleCache(object):
 
 class CacheServer(object):
 
-    def __init__(self):
+    def __init__(self, cfg):
+        self._cfg = cfg
         self._cache = SimpleCache()
         self._is_running = False
         self._context = None
@@ -74,7 +75,7 @@ class CacheServer(object):
             self._cache.sweep()
             time.sleep(1)
 
-    def start(self, cfg):
+    def start(self):
         # Mark that the server is running
         self._is_running = True
 
@@ -84,7 +85,7 @@ class CacheServer(object):
         # Bind ZMQ
         self._context = zmq.Context()
         self._socket = self._context.socket(zmq.REP)
-        self._socket.bind(cfg.connection.cache_uri)
+        self._socket.bind(self._cfg.connection.cache_uri)
 
         # Continue running until told otherwise
         while self._is_running:
